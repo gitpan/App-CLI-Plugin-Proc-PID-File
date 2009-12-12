@@ -8,7 +8,7 @@ App::CLI::Plugin::Proc::PID::File - for App::CLI::Extension pidfile plugin modul
 
 =head1 VERSION
 
-0.1
+1.0
 
 =head1 SYNOPSIS
 
@@ -35,9 +35,9 @@ App::CLI::Plugin::Proc::PID::File - for App::CLI::Extension pidfile plugin modul
   sub run {
   
       my($self, @args) = @_;
-	  # make pid file (/var/run/myapp.pid)
-	  # /var/run/myapp.pid is automatically deleted (by Proc::PID::File::DESTROY)
-	  $self->pf->touch;
+      # make pid file (/var/run/myapp.pid)
+      # /var/run/myapp.pid is automatically deleted (by Proc::PID::File::DESTROY)
+      $self->pf->touch;
   }
 
 =head1 DESCRIPTION
@@ -61,7 +61,7 @@ use File::Path;
 use Proc::PID::File;
 
 __PACKAGE__->mk_classaccessor("pf");
-our $VERSION = '0.1';
+our $VERSION = '1.0';
 
 =pod
 
@@ -118,7 +118,7 @@ Example2. pidfile option
 
 sub setup {
 
-	my $self = shift;
+	my($self, @argv) = @_;
 	my $pidfile;
     my %option = (exists $self->config->{proc_pid_file}) ? %{$self->config->{proc_pid_file}} : ();
 	if (exists $option{pidfile} && defined $option{pidfile}) {
@@ -141,7 +141,7 @@ sub setup {
 	}
 
 	$self->pf(Proc::PID::File->new(%option));
-	return $self->NEXT::setup;
+	$self->maybe::next::method(@argv);
 }
 
 ####################################
@@ -169,25 +169,17 @@ Example
   
   use strict;
   use feature ":5.10.0";
-  use FindBin qw($Script);
   
-  sub setup {
+  sub prerun {
   
-      my $self = shift;
-      $self->add_callback("prerun", \&_multi_launcher_lock);
+      my($self, @argv) = @_;
   
-      return $self->NEXT::setup;
-  }
-  
-  sub _multi_launcher_lock {
-  
-      my $self = shift;
       if ($self->pf->alive) {
           my $pid = $self->pf->read;
-          say "already $Script\[$pid\] is running";
-          exit 1;
+          die "already " . $self->argv0 . "[$pid] is running";
       }
       $self->pf->touch;
+      $self->maybe::next::method(@argv);
   }
   
   1;
@@ -238,26 +230,16 @@ Example
   
   use strict;
   use feature ":5.10.0";
-  use FindBin qw($Script);
   use POSIX qw(SIGTERM SIGINT SA_RESTART sigaction);
   
-  sub setup {
+  sub prerun {
   
-      my $self = shift;
-      $self->add_callback("prerun", \&_old_process_kill);
+      my($self, @argv) = @_;
   
-      return $self->NEXT::setup;
-  }
-  
-  sub _old_process_kill {
-  
-      my $self = shift;
-	  
       my $set = POSIX::SigSet->new(SIGTERM, SIGINT);
       my $act = POSIX::SigAction->new(sub {
                                       my $signal = shift;
-                                      say "signal $signal recevied...";
-                                      exit 1;
+                                      die "signal $signal recevied...";
                                   }, $set, SA_RESTART);
       my $old_act = POSIX::SigAction->new;
       sigaction(SIGTERM, $act, $old_act);
@@ -265,9 +247,10 @@ Example
       if ($self->pf->alive) {
           my $pid = $self->pf->read;
           kill SIGTERM, $pid;
-          say "old process $Script\[$pid\] is killed";
+          say "old process " . $self->argv0 . "[$pid] is killed";
       }
       $self->pf->touch;
+      $self->maybe::next::method(@argv);
   }
   
   1;
@@ -312,7 +295,7 @@ first execute process is killed and dying message "signal TERM recevied..."
 
 =head1 SEE ALSO
 
-L<App::CLI::Extension> L<NEXT> L<Proc::PID::File>
+L<App::CLI::Extension> L<Proc::PID::File>
 
 =head1 AUTHOR
 

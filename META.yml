@@ -3,10 +3,10 @@ abstract: 'for App::CLI::Extension pidfile plugin module'
 author:
   - 'Akira Horimoto'
 build_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.30
   Test::More: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.30
 distribution_type: module
 generated_by: 'Module::Install version 0.91'
 license: perl
@@ -20,11 +20,11 @@ no_index:
     - t
     - xt
 requires:
-  App::CLI::Extension: 0
+  App::CLI::Extension: 1
   Class::Data::Accessor: 0
   Filter::Util::Call: 0
-  Proc::PID::File: 0
+  Proc::PID::File: 1.27
   perl: 5.8.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.1
+version: 1.0
