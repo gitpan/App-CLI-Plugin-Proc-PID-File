@@ -7,7 +7,7 @@ build_requires 'Test::More';
 requires(
       "App::CLI::Extension"   => 1.0,
       "Class::Data::Accessor" => 0,
-      "Proc::PID::File"       => 1.27,
+      "Proc::PID::File"       => 1.24,
     );
 use_test_base;
 auto_include_deps;

@@ -8,7 +8,7 @@ App::CLI::Plugin::Proc::PID::File - for App::CLI::Extension pidfile plugin modul
 
 =head1 VERSION
 
-1.0
+1.1
 
 =head1 SYNOPSIS
 
@@ -56,12 +56,14 @@ use strict;
 use warnings;
 use 5.008;
 use base qw(Class::Data::Accessor);
+use Fcntl qw(:DEFAULT :flock);
 use File::Basename;
 use File::Path;
 use Proc::PID::File;
 
 __PACKAGE__->mk_classaccessor("pf");
-our $VERSION = '1.0';
+our $VERSION = '1.1';
+our $PROC_PID_FILE_RECOMENDED_VERSION = '1.27';
 
 =pod
 
@@ -83,6 +85,11 @@ Example:
 =cut
 
 *Proc::PID::File::path = \&_path;
+if ($Proc::PID::File::VERSION < $PROC_PID_FILE_RECOMENDED_VERSION) {
+	*Proc::PID::File::alive = \&_alive;
+	*Proc::PID::File::read  = \&_read;
+	*Proc::PID::File::touch = \&_touch;
+}
 
 =pod
 
@@ -151,6 +158,51 @@ sub _path {
 
 	my $self = shift;
 	return $self->{path};
+}
+
+sub _alive {
+
+	my $self = shift;
+	$self->debug("alive(): for A::C::P::Proc::PID::File compat method");
+	my $pid = $self->read;
+	if (defined $pid) {
+		$self->debug("alive(): $pid");
+	} else {
+		$self->debug("alive(): not living my process");
+		return 0;
+	}
+
+	if ($pid != $$ && kill(0, $pid)) {
+		return $self->verify($pid) ? 1 : 0;
+	}
+	return 0;
+}
+
+sub _read {
+
+	my $self = shift;
+	$self->debug("read(): for A::C::P::Proc::PID::File compat method");
+	if (!-e $self->path) {
+		return;
+	}
+	open my $fh, "<", $self->path or die "can not open file ". $self->path . ": $!";
+	flock $fh, LOCK_EX | LOCK_NB  or die "can not flock file " . $self->path . ": $!";
+	my($pid) = <$fh> =~ /^(\d{1,})$/; 
+	close $fh or die "can not close file " . $self->path . ": $!";
+
+	$self->debug(sprintf "read(%s) = $pid", $self->path);
+	return $pid;
+}
+
+sub _touch {
+
+	my $self = shift;
+	$self->debug("touch(): for A::C::P::Proc::PID::File compat method");
+	$self->debug("write($$)");
+	open my $fh, ">", $self->path or die "can not open file ". $self->path . ": $!";
+	flock $fh, LOCK_EX | LOCK_NB  or die "can not flock file " . $self->path . ": $!";
+	print $fh "$$\n";
+	close $fh or die "can not close file " . $self->path . ": $!";
 }
 
 
