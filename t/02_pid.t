@@ -18,7 +18,3 @@ close $fh;
 unlink $TEST_PIDFILE;
 ok($pid == $$, "pf same pid test");
 
-
-
-
-

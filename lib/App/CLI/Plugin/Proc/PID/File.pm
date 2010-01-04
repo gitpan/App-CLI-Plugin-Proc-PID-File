@@ -8,7 +8,7 @@ App::CLI::Plugin::Proc::PID::File - for App::CLI::Extension pidfile plugin modul
 
 =head1 VERSION
 
-1.1
+1.2
 
 =head1 SYNOPSIS
 
@@ -54,7 +54,6 @@ Proc::PID::File option is L<Proc::PID::File> please refer to
 
 use strict;
 use warnings;
-use 5.008;
 use base qw(Class::Data::Accessor);
 use Fcntl qw(:DEFAULT :flock);
 use File::Basename;
@@ -62,7 +61,7 @@ use File::Path;
 use Proc::PID::File;
 
 __PACKAGE__->mk_classaccessor("pf");
-our $VERSION = '1.1';
+our $VERSION = '1.2';
 our $PROC_PID_FILE_RECOMENDED_VERSION = '1.27';
 
 =pod
@@ -211,9 +210,9 @@ __END__
 
 =head1 TIPS
 
-=head2 MultiBoot Lock Plugin
+=head2 Multi Launcher Lock Plugin
 
-1. Make MultiBoot Lock Plugin. require App::CLI::Plugin::InstallCallback
+1. Make MultiBoot Lock Plugin
 
 Example
 
@@ -240,7 +239,6 @@ Example
 
   # in MyApp.pm
   __PACKAGE__->load_plugins(qw(
-              InstallCallback
               Proc::PID::File
               +MyApp::Plugin::MultiLauncherLock
             ));
@@ -311,7 +309,6 @@ Example
 
   # in MyApp.pm
   __PACKAGE__->load_plugins(qw(
-              InstallCallback
               Proc::PID::File
               +MyApp::Plugin::OldProcessKill
             ));
@@ -347,7 +344,7 @@ first execute process is killed and dying message "signal TERM recevied..."
 
 =head1 SEE ALSO
 
-L<App::CLI::Extension> L<Proc::PID::File>
+L<App::CLI::Extension> L<Class::Data::Accessor> L<Proc::PID::File>
 
 =head1 AUTHOR
 
@@ -358,7 +355,7 @@ Akira Horimoto
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
-Copyright (C) 2009 Akira Horimoto
+Copyright (C) 2010 Akira Horimoto
 
 =cut
 

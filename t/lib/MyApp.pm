@@ -9,6 +9,7 @@ use constant alias => (
                  stringfystack => "StringfyStack",
              );
 
+$ENV{APPCLI_NON_EXIT} = 1;
 __PACKAGE__->config(proc_pid_file => { dir => File::Spec->tmpdir, name => "prove" });
 __PACKAGE__->load_plugins(qw(
                  Proc::PID::File
