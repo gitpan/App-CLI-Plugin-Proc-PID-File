@@ -3,27 +3,24 @@ abstract: 'for App::CLI::Extension pidfile plugin module'
 author:
   - 'Akira Horimoto'
 build_requires:
-  ExtUtils::MakeMaker: 6.30
+  ExtUtils::MakeMaker: 6.42
   Test::More: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.30
-distribution_type: module
-generated_by: 'Module::Install version 0.91'
-license: perl
+  ExtUtils::MakeMaker: 0
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 6.59, CPAN::Meta::Converter version 2.112600'
+license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: App-CLI-Plugin-Proc-PID-File
 no_index:
   directory:
-    - inc
     - t
-    - xt
+    - inc
 requires:
-  App::CLI::Extension: 1.2
-  Class::Data::Accessor: 0
+  App::CLI::Extension: 1.4
+  Class::Accessor::Grouped: 0
   Filter::Util::Call: 0
   Proc::PID::File: 1.24
-resources:
-  license: http://dev.perl.org/licenses/
-version: 1.2
+version: 1.3

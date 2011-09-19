@@ -8,7 +8,7 @@ App::CLI::Plugin::Proc::PID::File - for App::CLI::Extension pidfile plugin modul
 
 =head1 VERSION
 
-1.2
+1.3
 
 =head1 SYNOPSIS
 
@@ -54,15 +54,15 @@ Proc::PID::File option is L<Proc::PID::File> please refer to
 
 use strict;
 use warnings;
-use base qw(Class::Data::Accessor);
+use base qw(Class::Accessor::Grouped);
 use Fcntl qw(:DEFAULT :flock);
 use File::Basename;
 use File::Path;
 use Proc::PID::File;
 
-__PACKAGE__->mk_classaccessor("pf");
-our $VERSION = '1.2';
-our $PROC_PID_FILE_RECOMENDED_VERSION = '1.27';
+__PACKAGE__->mk_group_accessors(inherited => "pf");
+our $VERSION = '1.3';
+our $PROC_PID_FILE_RECOMENDED_VERSION = '1.37';
 
 =pod
 
@@ -85,9 +85,12 @@ Example:
 
 *Proc::PID::File::path = \&_path;
 if ($Proc::PID::File::VERSION < $PROC_PID_FILE_RECOMENDED_VERSION) {
-	*Proc::PID::File::alive = \&_alive;
-	*Proc::PID::File::read  = \&_read;
-	*Proc::PID::File::touch = \&_touch;
+	{
+		no warnings "redefine";
+		*Proc::PID::File::alive = \&_alive;
+		*Proc::PID::File::read  = \&_read;
+		*Proc::PID::File::touch = \&_touch;
+	}
 }
 
 =pod
@@ -344,7 +347,7 @@ first execute process is killed and dying message "signal TERM recevied..."
 
 =head1 SEE ALSO
 
-L<App::CLI::Extension> L<Class::Data::Accessor> L<Proc::PID::File>
+L<App::CLI::Extension> L<Class::Accessor::Grouped> L<Proc::PID::File>
 
 =head1 AUTHOR
 
